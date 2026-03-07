@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMIMS Lost & Found</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            background: #003366;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover { background: #004080; }
+
+        /* Login type toggle */
+        .login-type-toggle {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 2px solid #003366;
+        }
+        .login-type-toggle button {
+            flex: 1;
+            margin: 0;
+            border-radius: 0;
+            border: none;
+            background: white;
+            color: #003366;
+            font-weight: bold;
+            padding: 10px;
+            transition: 0.2s;
+        }
+        .login-type-toggle button.active {
+            background: #003366;
+            color: white;
+        }
+        .login-type-toggle button:hover:not(.active) {
+            background: #e8f0fe;
+        }
+
+        .admin-badge {
+            display: none;
+            text-align: center;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .toggle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 15px;
+        }
+        .toggle:hover { color: #003366; }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+            font-size: 0.9rem;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        h2 { text-align: center; color: #003366; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<!-- Login Form -->
+<div class="container" id="loginForm">
+    <h2>NMIMS L&F</h2>
+
+    <!-- Admin / User toggle -->
+    <div class="login-type-toggle">
+        <button id="btnUser"  class="active" onclick="setLoginType('user')">👤 User</button>
+        <button id="btnAdmin" onclick="setLoginType('admin')">🔑 Admin</button>
+    </div>
+
+    <div id="adminBadge" class="admin-badge">🔒 Admin access only</div>
+    <div id="loginMessage" class="message"></div>
+
+    <input type="email"    id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPass"  placeholder="Password">
+    <button onclick="login()" id="loginBtn">Login</button>
+
+    <div class="toggle" id="registerToggle" onclick="toggleForm()">New here? Register</div>
+</div>
+
+<!-- Registration Form (users only) -->
+<div class="container" id="regForm" style="display:none;">
+    <h2>Register</h2>
+    <div id="regMessage" class="message"></div>
+    <input type="text"     id="regName"        placeholder="Full Name">
+    <input type="email"    id="regEmail"        placeholder="Email">
+    <input type="password" id="regPass"         placeholder="Password">
+    <input type="password" id="regPassConfirm"  placeholder="Confirm Password">
+    <button onclick="register()">Register</button>
+    <div class="toggle" onclick="toggleForm()">Already have an account? Login</div>
+</div>
+
+<script>
+    let currentLoginType = 'user';
+
+    function setLoginType(type) {
+        currentLoginType = type;
+
+        document.getElementById('btnUser').classList.toggle('active', type === 'user');
+        document.getElementById('btnAdmin').classList.toggle('active', type === 'admin');
+        document.getElementById('adminBadge').style.display = type === 'admin' ? 'block' : 'none';
+        document.getElementById('registerToggle').style.display = type === 'admin' ? 'none' : 'block';
+
+        // Clear any previous messages
+        document.getElementById('loginMessage').style.display = 'none';
+        document.getElementById('loginMessage').textContent = '';
+    }
+
+    function toggleForm() {
+        const loginForm = document.getElementById('loginForm');
+        const regForm   = document.getElementById('regForm');
+        if (loginForm.style.display === 'none') {
+            loginForm.style.display = 'block';
+            regForm.style.display   = 'none';
+        } else {
+            loginForm.style.display = 'none';
+            regForm.style.display   = 'block';
+        }
+        document.getElementById('loginMessage').style.display = 'none';
+        document.getElementById('regMessage').style.display   = 'none';
+        document.getElementById('loginMessage').textContent = '';
+        document.getElementById('regMessage').textContent   = '';
+    }
+
+    function showMessage(elementId, message, type) {
+        const el = document.getElementById(elementId);
+        el.textContent  = message || 'An error occurred';
+        el.className    = 'message ' + type;
+        el.style.display = 'block';
+    }
+
+    function login() {
+        const email    = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPass').value;
+
+        if (!email || !password) {
+            showMessage('loginMessage', 'Please fill all fields', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('action',   'login');
+        formData.append('email',    email);
+        formData.append('password', password);
+        formData.append('login_as', currentLoginType); // ← tells auth.php which mode
+
+        fetch('auth.php', { method: 'POST', body: formData })
+            .then(res => res.text())
+            .then(data => {
+                const trimmed = data.trim();
+                if (trimmed.startsWith('redirect:')) {
+                    // auth.php tells us exactly where to go
+                    window.location.href = trimmed.replace('redirect:', '');
+                } else {
+                    showMessage('loginMessage', trimmed || 'Login failed', 'error');
+                }
+            })
+            .catch(() => showMessage('loginMessage', 'Connection error. Check XAMPP.', 'error'));
+    }
+
+    function register() {
+        const name            = document.getElementById('regName').value;
+        const email           = document.getElementById('regEmail').value;
+        const password        = document.getElementById('regPass').value;
+        const passwordConfirm = document.getElementById('regPassConfirm').value;
+
+        if (!name || !email || !password || !passwordConfirm) {
+            showMessage('regMessage', 'Please fill all fields', 'error');
+            return;
+        }
+        if (password !== passwordConfirm) {
+            showMessage('regMessage', 'Passwords do not match', 'error');
+            return;
+        }
+        if (password.length < 6) {
+            showMessage('regMessage', 'Password must be at least 6 characters', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('action',   'register');
+        formData.append('name',     name);
+        formData.append('email',    email);
+        formData.append('password', password);
+
+        fetch('auth.php', { method: 'POST', body: formData })
+            .then(res => res.text())
+            .then(data => {
+                if (data.includes('Successful') || data.includes('success')) {
+                    showMessage('regMessage', 'Registration successful! Please login.', 'success');
+                    setTimeout(() => {
+                        toggleForm();
+                        document.getElementById('regName').value       = '';
+                        document.getElementById('regEmail').value      = '';
+                        document.getElementById('regPass').value       = '';
+                        document.getElementById('regPassConfirm').value = '';
+                    }, 2000);
+                } else {
+                    showMessage('regMessage', data || 'Registration failed', 'error');
+                }
+            })
+            .catch(() => showMessage('regMessage', 'Connection error. Check XAMPP.', 'error'));
+    }
+</script>
+
+</body>
+</html>
