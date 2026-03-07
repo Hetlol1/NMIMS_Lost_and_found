@@ -22,7 +22,7 @@ $fallbackAvatar = "https://ui-avatars.com/api/?name={$encodedName}&background=00
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NMIMS Lost & Found Dashboard</title>
+<title>Back2U Lost and Found</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;}

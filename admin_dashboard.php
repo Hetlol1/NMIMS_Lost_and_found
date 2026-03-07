@@ -19,7 +19,7 @@ $avatarSrc      = !empty($pRow['profile_photo']) ? htmlspecialchars($pRow['profi
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard — NMIMS Lost & Found</title>
+<title>Admin Dashboard — BACK2U</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;}
@@ -90,7 +90,7 @@ header{background:#003366;color:white;padding:15px 20px;display:flex;justify-con
 <header>
   <div class="header-left">
     <img src="nmims-university-logo.png" alt="NMIMS" style="height:45px;object-fit:contain;filter:brightness(0) invert(1);">
-    <h3>NMIMS Lost &amp; Found</h3>
+    <h3>Back2U</h3>
     <span class="admin-chip">🔑 Admin</span>
   </div>
   <div class="header-right">
